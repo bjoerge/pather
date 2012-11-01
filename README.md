@@ -21,7 +21,7 @@ window.history.pushState({}, null, "/foo/bar")
 ```
 
 ## Named parameters (Sinatra/Backbone style)
-
+[View this example in jsfiddle](http://jsfiddle.net/A65uJ/2/embedded/result/)
 ```js
 Path.on("/foo/:a/:b", function(a, b) {
   console.log("Enter /foo/"+a+"/"+b);
