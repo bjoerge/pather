@@ -1,5 +1,5 @@
 {
-  "name": "pathchange",
+  "name": "path-listener",
   "version": "0.0.1",
   "description": "Drop-dead simple window.location.pathname listener",
   "main": "path-listener.js",
