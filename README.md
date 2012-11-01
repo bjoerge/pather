@@ -4,7 +4,7 @@
 
 [![Build Status](https://secure.travis-ci.org/bjoerge/path-listener.png)](http://travis-ci.org/bjoerge/path-listener)
 
-#### Disclaimer: This is work in progress. At the moment it is NSFW. Radical change of api is not likely, its determined.
+#### Disclaimer: This is work in progress. At the moment it is NSFW.
 
 Missing features are:
 - Hash based path fallback for older browsers
