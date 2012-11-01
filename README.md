@@ -26,4 +26,6 @@ window.history.pushState({}, null, "/foo/bar")
 Path.on("/foo/:a/:b", function(a, b) {
   console.log("Enter /foo/"+a+"/"+b);
 })
+
+window.history.pushState({}, null, "/foo/bar/baz")
 ```
