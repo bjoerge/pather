@@ -133,4 +133,10 @@
   } else {
     root.Path = pathListener;
   }
+
+  var oldListener = window.onpopstate;
+  window.onpopstate = function() {
+    if (oldListener) oldListener.apply(this, arguments);
+    pathListener.checkAll();
+  }
 })(this, window);
