@@ -107,7 +107,6 @@
      */
     PathListener.prototype.isActive = function (/* String */ route) {
       regexp = (route instanceof RegExp) ? route : new RegExp(route)
-      console.log(regexp)
       return regexp.test(document.location.pathname)
     };
 
