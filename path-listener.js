@@ -101,6 +101,20 @@
       listeners = [];
     };
 
+    /**
+     * Convenience method to check if the given regex string matches the current document.location.pathname
+     * @param route
+     */
+    PathListener.prototype.isActive = function (/* String */ route) {
+      regexp = (route instanceof RegExp) ? route : new RegExp(route)
+      console.log(regexp)
+      return regexp.test(document.location.pathname)
+    };
+
+    /**
+     * Checks whether any of the registered listeners matches the given path
+     * @param pathname
+     */
     PathListener.prototype.has = function (pathname) {
       return listeners.some(function(listener) {
         return listener.regexp.test(pathname);
