@@ -1,10 +1,11 @@
 (function(root, win) {
   // Recklessly stolen from/ Backbone.js and modified a little
   var namedParam = /:\w+/g,
-      splatParam = /\*\w*/g,
+      splatParam = /\*\w+/g,
+      subPath = /\*/g,
       escapeRegExp = /[-[\]{}()+?.,\\^$|#\s]/g,
       routeToRegExp = function (route) {
-        route = route.replace(escapeRegExp, "\\$&").replace(namedParam, "([^/]+)").replace(splatParam, ".*?");
+        route = route.replace(escapeRegExp, "\\$&").replace(namedParam, "([^/]+)").replace(splatParam, "(.*)?").replace(subPath, ".*?");
         return new RegExp("^" + route + "$");
       };
 

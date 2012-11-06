@@ -64,10 +64,11 @@ describe "Path listener", ->
 
     it "will trigger on wildcard match", ->
       spy = sinon.spy()
-      Path.on "/foo/*any", spy
+      Path.on "/foo/*", spy
       window.history.replaceState {}, null, "/foo"
       spy.callCount.should.equal 0
       window.history.replaceState {}, null, "/foo/bar"
+      spy.callCount.should.equal 1
       window.history.replaceState {}, null, "/foo/bar/baz"
       spy.callCount.should.equal 1
 
@@ -130,5 +131,5 @@ describe "Path listener", ->
 
     it "extracts the parameters from a route string", ->
       window.history.replaceState {}, null, "/foo/bar/baz"
-      Path.match("/foo/:qux/*").should.eql ['bar']
+      Path.match("/foo/:qux/*subpath").should.eql ['bar', 'baz']
 
