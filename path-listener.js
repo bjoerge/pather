@@ -104,6 +104,17 @@
     /**
      * Convenience method to check if the given regex or route string matches the current document.location.pathname
      * @param route
+     * @returns true or false
+     */
+    PathListener.prototype.matches = function (/* String|RegExp */ route) {
+      return !!this.match(route);
+    };
+
+    /**
+     * Match the given regex or route string against the current document.location.pathname and return an array with the
+     * values for each capturing parenthesis. Returns null if there is no match.
+     * @param route
+     * @returns the values for captured parenthesis
      */
     PathListener.prototype.match = function (/* String|RegExp */ route) {
       var regexp = (route instanceof RegExp) ? route : routeToRegExp(route);
