@@ -102,12 +102,13 @@
     };
 
     /**
-     * Convenience method to check if the given regex string matches the current document.location.pathname
+     * Convenience method to check if the given regex or route string matches the current document.location.pathname
      * @param route
      */
-    PathListener.prototype.isActive = function (/* String */ route) {
-      regexp = (route instanceof RegExp) ? route : new RegExp(route)
-      return regexp.test(document.location.pathname)
+    PathListener.prototype.match = function (/* String|RegExp */ route) {
+      var regexp = (route instanceof RegExp) ? route : routeToRegExp(route);
+      var matches = regexp.exec(window.location.pathname);
+      return matches && matches.slice(1);
     };
 
     /**

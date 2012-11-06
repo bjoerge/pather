@@ -115,3 +115,20 @@ describe "Path listener", ->
       Path.has("/fOo/Bar").should.not.be.ok
       Path.on /foo\/bar/i, ->
       Path.has("/fOo/Bar").should.be.ok
+
+    it "can check whether the current location matches a regex", ->
+      window.history.replaceState {}, null, "/foo"
+      Path.match(/foo.*/).should.be.ok
+
+    it "extracts the parameters from a regex", ->
+      window.history.replaceState {}, null, "/foo/bar/baz"
+      Path.match(/foo\/(.*)\/.*/).should.eql ['bar']
+
+    it "can check whether the current location matches a route string", ->
+      window.history.replaceState {}, null, "/foo/bar/baz"
+      Path.match("/foo/:qux/*").should.be.ok
+
+    it "extracts the parameters from a route string", ->
+      window.history.replaceState {}, null, "/foo/bar/baz"
+      Path.match("/foo/:qux/*").should.eql ['bar']
+
