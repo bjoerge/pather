@@ -1,6 +1,6 @@
 {
   "name": "pather",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A path listener with added relish",
   "main": "pather.js",
   "dependencies": {},
