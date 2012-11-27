@@ -22,7 +22,7 @@ window.history.pushState({}, null, "/foo/bar")
 ```
 
 ## Named parameters (Sinatra/Backbone style)
-[View this example in jsfiddle](http://jsfiddle.net/A65uJ/8/embedded/result/)
+[View this example in jsfiddle](http://jsfiddle.net/A65uJ/10/embedded/result/)
 
 ```js
 Pather.on("/foo/:a/:b", function(a, b) {
