@@ -12,8 +12,9 @@ is required.
 # Examples
 
 ## Simple
+
 ```js
-Path.on("/foo/bar", function() {
+Pather.on("/foo/bar", function() {
   console.log("Enter /foo/bar");
 })
 
@@ -21,9 +22,10 @@ window.history.pushState({}, null, "/foo/bar")
 ```
 
 ## Named parameters (Sinatra/Backbone style)
-[View this example in jsfiddle](http://jsfiddle.net/A65uJ/2/embedded/result/)
+[View this example in jsfiddle](http://jsfiddle.net/A65uJ/8/embedded/result/)
+
 ```js
-Path.on("/foo/:a/:b", function(a, b) {
+Pather.on("/foo/:a/:b", function(a, b) {
   console.log("Enter /foo/"+a+"/"+b);
 })
 
