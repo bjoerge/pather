@@ -2,7 +2,7 @@
 
 *Drop-dead simple window.location.pathname listener*
 
-[![Build Status](https://secure.travis-ci.org/bjoerge/path-listener.png)](http://travis-ci.org/bjoerge/path-listener)
+[![Build Status](https://secure.travis-ci.org/bjoerge/pather.png)](http://travis-ci.org/bjoerge/pather)
 
 #### Disclaimer: This is work in progress
 
