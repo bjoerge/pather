@@ -1,5 +1,5 @@
 require("./mock-window")
-Path = require("../path-listener")
+Path = require("../pather")
 sinon = require("sinon")
 
 describe "Path listener", ->

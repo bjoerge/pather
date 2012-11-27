@@ -1,5 +1,6 @@
 (function(root, win) {
-  // Recklessly stolen from/ Backbone.js and modified a little
+
+  // Recklessly stolen from Backbone.js and modified a little
   var namedParam = /:\w+/g,
       splatParam = /\*\w+/g,
       subPath = /\*/g,
@@ -9,8 +10,8 @@
         return new RegExp("^" + route + "$");
       };
 
-  var PathListener = (function () {
-    function PathListener() { }
+  var Pather = (function () {
+    function Pather() { }
 
     var listeners = [];
 
@@ -83,22 +84,22 @@
       };
     }
 
-    PathListener.prototype.on = withListener(function (listener) {
+    Pather.prototype.on = withListener(function (listener) {
       listeners.push(listener);
       check(listener, window.location.pathname);
     });
 
-    PathListener.prototype.once = withListener(function (listener) {
+    Pather.prototype.once = withListener(function (listener) {
       listener.once = true;
       listeners.push(listener);
       check(listener, window.location.pathname);
     });
 
-    PathListener.prototype.removeListener = withListener(function (listener) {
+    Pather.prototype.removeListener = withListener(function (listener) {
       remove(find(listener));
     });
 
-    PathListener.prototype.removeAllListeners = function () {
+    Pather.prototype.removeAllListeners = function () {
       listeners = [];
     };
 
@@ -107,7 +108,7 @@
      * @param route
      * @returns true or false
      */
-    PathListener.prototype.matches = function (/* String|RegExp */ route) {
+    Pather.prototype.matches = function (/* String|RegExp */ route) {
       return !!this.match(route);
     };
 
@@ -117,7 +118,7 @@
      * @param route
      * @returns the values for captured parenthesis
      */
-    PathListener.prototype.match = function (/* String|RegExp */ route) {
+    Pather.prototype.match = function (/* String|RegExp */ route) {
       var regexp = (route instanceof RegExp) ? route : routeToRegExp(route);
       var matches = regexp.exec(window.location.pathname);
       return matches && matches.slice(1);
@@ -127,42 +128,35 @@
      * Checks whether any of the registered listeners matches the given path
      * @param pathname
      */
-    PathListener.prototype.has = function (pathname) {
+    Pather.prototype.has = function (pathname) {
       return listeners.some(function(listener) {
         return listener.regexp.test(pathname);
       });
     };
 
-    PathListener.prototype.checkAll = function () {
+    Pather.prototype.checkAll = function () {
       listeners.forEach(function (listener) {
         check(listener, window.location.pathname);
       });
     };
 
-    return PathListener;
+    return Pather;
 
   })();
 
   // Only have one listener per page
-  var pathListener = new PathListener;
-
-  // todo: make go away
-  pathListener.go = function(pathname) {
-    if (this.has(pathname)) return false;
-    window.history.replaceState({}, null, pathname)
-  };
+  var instance = new Pather;
 
   if (typeof exports !== 'undefined') {
     if (typeof module !== 'undefined' && module.exports) {
-      module.exports = pathListener;
+      module.exports = instance;
     }
   } else {
-    root.Path = pathListener;
+    win.Pather = instance;
   }
 
-  var oldListener = window.onpopstate;
-  window.onpopstate = function() {
-    if (oldListener) oldListener.apply(this, arguments);
-    pathListener.checkAll();
-  }
+  window[window.addEventListener ? 'addEventListener' : 'attachEvent']( 'popstate', function(e) {
+    instance.checkAll();
+  }, false);
+
 })(this, window);

@@ -1,13 +1,13 @@
-# Path listener
+# Pather.js
 
 *Drop-dead simple window.location.pathname listener*
 
 [![Build Status](https://secure.travis-ci.org/bjoerge/path-listener.png)](http://travis-ci.org/bjoerge/path-listener)
 
-#### Disclaimer: This is work in progress. At the moment this project should be considered NSFW.
+#### Disclaimer: This is work in progress
 
-Missing features are:
-- Hash based path fallback for older browsers
+Works in browsers supporting the HTML5 History API, for older browsers, a polyfill like [devote/HTML5-History-API](https://github.com/devote/HTML5-History-API)
+is required.
 
 # Examples
 
