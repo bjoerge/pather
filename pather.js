@@ -8,7 +8,18 @@
       routeToRegExp = function (route) {
         route = route.replace(escapeRegExp, "\\$&").replace(namedParam, "([^/]+)").replace(splatParam, "(.*)?").replace(subPath, ".*?");
         return new RegExp("^" + route + "$");
+      },
+      getHash = function(url) {
+        var match = url.match(/#(.*)$/);
+        return match ? match[1] : '';
+      },
+      normalizePathname = function() {
+        var loc = window.location;
+        var pathname = loc.pathname != "/" ? loc.pathname : getHash(loc.href);
+        console.log("PATHNAME: ", pathname);
+        return pathname;
       };
+
 
   var Pather = (function () {
     function Pather() { }
@@ -86,13 +97,13 @@
 
     Pather.prototype.on = withListener(function (listener) {
       listeners.push(listener);
-      check(listener, window.location.pathname);
+      check(listener, normalizePathname());
     });
 
     Pather.prototype.once = withListener(function (listener) {
       listener.once = true;
       listeners.push(listener);
-      check(listener, window.location.pathname);
+      check(listener, normalizePathname());
     });
 
     Pather.prototype.removeListener = withListener(function (listener) {
@@ -120,7 +131,7 @@
      */
     Pather.prototype.match = function (/* String|RegExp */ route) {
       var regexp = (route instanceof RegExp) ? route : routeToRegExp(route);
-      var matches = regexp.exec(window.location.pathname);
+      var matches = regexp.exec(normalizePathname());
       return matches && matches.slice(1);
     };
 
@@ -136,7 +147,7 @@
 
     Pather.prototype.checkAll = function () {
       listeners.forEach(function (listener) {
-        check(listener, window.location.pathname);
+        check(listener, normalizePathname());
       });
     };
 
