@@ -16,7 +16,6 @@
       normalizePathname = function() {
         var loc = window.location;
         var pathname = loc.pathname != "/" ? loc.pathname : getHash(loc.href);
-        console.log("PATHNAME: ", pathname);
         return pathname;
       };
 
