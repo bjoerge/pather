@@ -1,13 +1,12 @@
 {
   "name": "pather",
   "version": "0.0.11",
-  "description": "A path listener with added relish",
+  "description": "A window.location listener with added relish",
   "main": "pather.js",
   "dependencies": {},
   "devDependencies": {
     "jquery": "git://github.com/bjoerge/jquery-node.git",
     "jsdom": "latest",
-    "location": "latest",
     "mocha": "latest",
     "coffee-script": "latest",
     "should": "latest",
@@ -24,6 +23,7 @@
     "path",
     "pushState",
     "pathname",
+    "hashchange",
     "window.location"
   ],
   "author": "Bjørge Næss",
