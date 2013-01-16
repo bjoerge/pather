@@ -1,10 +1,17 @@
 jsdom = require("jsdom").jsdom;
-location = require("location");
 doc = jsdom();
 
 window = doc.createWindow();
 
-window.location = location
+oldSetter = Object.getOwnPropertyDescriptor(window.location, 'hash').set
+# A workaround to properly trigger hashchange events when setting window.location.hash
+window.location.__defineSetter__ "hash", (val)->
+  val ||= ""
+  val = "#"+val if val and val.charAt(0) isnt "#"
+  oldSetter(val)
+  ev = doc.createEvent("HashChangeEvent")
+  ev.initEvent('hashchange', false, false)
+  window.dispatchEvent(ev)
 
 window.history =
   replaceState: (state, title, pathname)->

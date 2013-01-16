@@ -9,19 +9,18 @@
         route = route.replace(escapeRegExp, "\\$&").replace(namedParam, "([^/]+)").replace(splatParam, "(.*)?").replace(subPath, ".*?");
         return new RegExp("^" + route + "$");
       },
-      getHash = function(url) {
-        var match = url.match(/#(.*)$/);
-        return match ? match[1] : '';
-      },
       normalizePathname = function() {
         var loc = window.location;
-        var pathname = loc.pathname != "/" ? loc.pathname : getHash(loc.href);
+        var pathname = loc.pathname + loc.hash;
         return pathname || "/";
       };
 
 
   var Pather = (function () {
-    function Pather() { }
+    var addDOMListener = function(type, listener, useCapture) {
+      addDOMListener = window[window.addEventListener ? 'addEventListener' : 'attachEvent'].bind(window);
+      return addDOMListener(type, listener, useCapture);
+    };
 
     var listeners = [];
 
@@ -53,9 +52,9 @@
       return JSON.stringify(a1) == JSON.stringify(a2);
     }
 
-    function check(listener, pathname) {
-      if (listener.regexp.test(pathname)) {
-        var params = listener.regexp.exec(pathname).slice(1);
+    function check(listener, path) {
+      if (listener.regexp.test(path)) {
+        var params = listener.regexp.exec(path).slice(1);
         if (listener.event === 'enter' && !(listener.active && deepEqual(listener.prevParams, params))) {
           // Its a listener for 'enter' and wasn't active on last check, so call the listener function
           call(listener, params);
@@ -92,6 +91,17 @@
         };
         return func.call(this, listener);
       };
+    }
+
+    function Pather(config) {
+      config || (config = {});
+
+      if (!(config.hasOwnProperty('pushState') || config.pushState === false)) {
+        addDOMListener('popstate', this.checkAll.bind(this))
+      }
+      if (!(config.hasOwnProperty('hash') || config.hash === false)) {
+        addDOMListener('hashchange', this.checkAll.bind(this))
+      }
     }
 
     Pather.prototype.on = withListener(function (listener) {
