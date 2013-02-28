@@ -15,7 +15,6 @@
         return pathname || "/";
       };
 
-
   var Pather = (function () {
     var addDOMListener = function(type, listener, useCapture) {
       addDOMListener = window[window.addEventListener ? 'addEventListener' : 'attachEvent'].bind(window);
@@ -156,6 +155,7 @@
 
     Pather.prototype.checkAll = function () {
       listeners.forEach(function (listener) {
+        console.log(normalizePathname())
         check(listener, normalizePathname());
       });
     };
@@ -164,19 +164,12 @@
 
   })();
 
-  // Only have one listener per page
-  var instance = new Pather;
-
   if (typeof exports !== 'undefined') {
     if (typeof module !== 'undefined' && module.exports) {
-      module.exports = instance;
+      module.exports = Pather;
     }
   } else {
-    win.Pather = instance;
+    win.Pather = Pather;
   }
-
-  window[window.addEventListener ? 'addEventListener' : 'attachEvent']( 'popstate', function(e) {
-    instance.checkAll();
-  }, false);
 
 })(this, window);

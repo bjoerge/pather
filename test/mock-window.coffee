@@ -16,7 +16,9 @@ window.location.__defineSetter__ "hash", (val)->
 window.history =
   replaceState: (state, title, pathname)->
     window.location.pathname = pathname
-    require("../pather").checkAll()
+    ev = doc.createEvent("PopStateEvent")
+    ev.initEvent('popstate', false, false)
+    window.dispatchEvent(ev)
 
 global.window = window
 global.document = window.document

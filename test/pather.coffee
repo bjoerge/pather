@@ -3,37 +3,39 @@ Pather = require("../pather")
 sinon = require("sinon")
 
 describe "Path listener", ->
+  pather = null
   beforeEach ->
+    pather = new Pather()
     window.location.hash = ''
     window.history.replaceState {}, null, "/"
   afterEach ->
-    Pather.removeAllListeners()
+    pather.removeAllListeners()
 
   describe "Path matching", ->
 
     it "can register a listener function for whenever a path is entered", ->
       spy = sinon.spy()
-      Pather.on "/foo", spy
+      pather.on "/foo", spy
       window.history.replaceState {}, null, "/foo"
       spy.callCount.should.equal 1
 
     it "can register a listener function for whenever a path is left", ->
       spy = sinon.spy()
-      Pather.on "/foo", 'leave', spy
+      pather.on "/foo", 'leave', spy
       window.history.replaceState {}, null, "/foo"
       window.history.replaceState {}, null, "/bar"
       spy.callCount.should.equal 1
 
     it "can register a listener to be called when entering a parameterized route", ->
       spy = sinon.spy()
-      Pather.on "/foo/:a/:b", spy
+      pather.on "/foo/:a/:b", spy
       window.history.replaceState {}, null, "/foo/bar/baz"
       spy.callCount.should.equal 1
       spy.calledWith('bar', 'baz').should.be.ok
 
     it "will trigger on re-enter", ->
       spy = sinon.spy()
-      Pather.on "/foo", spy
+      pather.on "/foo", spy
       window.history.replaceState {}, null, "/foo"
       spy.callCount.should.equal 1
       window.history.replaceState {}, null, "/bar"
@@ -42,7 +44,7 @@ describe "Path listener", ->
 
     it "will trigger only once if listener added with #once", ->
       spy = sinon.spy()
-      Pather.once "/foo", spy
+      pather.once "/foo", spy
       window.history.replaceState {}, null, "/foo"
       spy.callCount.should.equal 1
       window.history.replaceState {}, null, "/bar"
@@ -51,7 +53,7 @@ describe "Path listener", ->
 
     it "will trigger on re-leave", ->
       spy = sinon.spy()
-      Pather.on "/foo", 'leave', spy
+      pather.on "/foo", 'leave', spy
       window.history.replaceState {}, null, "/foo"
       spy.callCount.should.equal 0
       window.history.replaceState {}, null, "/bar"
@@ -65,7 +67,7 @@ describe "Path listener", ->
 
     it "will trigger on wildcard match", ->
       spy = sinon.spy()
-      Pather.on "/foo/*", spy
+      pather.on "/foo/*", spy
       window.history.replaceState {}, null, "/foo"
       spy.callCount.should.equal 0
       window.history.replaceState {}, null, "/foo/bar"
@@ -75,7 +77,7 @@ describe "Path listener", ->
 
     it "will trigger leaving a wildcard match", ->
       spy = sinon.spy()
-      Pather.on "/foo/*", 'leave', spy
+      pather.on "/foo/*", 'leave', spy
       window.history.replaceState {}, null, "/foo/bar"
       window.history.replaceState {}, null, "/foo/bar/baz"
       spy.callCount.should.equal 0
@@ -84,7 +86,7 @@ describe "Path listener", ->
 
     it "can also specify params in the hash section of the location", ->
       spy = sinon.spy()
-      Pather.on "/fruits/:fruit/#:bookmark", spy
+      pather.on "/fruits/:fruit/#:bookmark", spy
       window.history.replaceState({}, null, "/fruits/banana/")
       spy.called.should.equal false
       window.location.hash = "nutrition_facts"
@@ -93,7 +95,7 @@ describe "Path listener", ->
 
     xit "will also map the keyword parameters to the callback function (todo)", ->
       spy = sinon.spy()
-      Pather.on "/foo/:a/:b?keyword=:c", spy
+      pather.on "/foo/:a/:b?keyword=:c", spy
       window.history.replaceState {}, null, "/foo/bar/baz?keyword=qux"
       spy.callCount.should.equal 1
       spy.calledWith('bar', 'baz', {keyword: 'qux'}).should.be.ok
@@ -101,45 +103,45 @@ describe "Path listener", ->
   describe "removing listeners", ->
     it "can remove a listener", ->
       spy = sinon.spy()
-      Pather.on "/foo", spy
-      Pather.removeListener('/foo', spy)
+      pather.on "/foo", spy
+      pather.removeListener('/foo', spy)
       window.history.replaceState {}, null, "/foo"
       spy.callCount.should.equal 0
 
     it "can remove all listeners", ->
       spy = sinon.spy()
-      Pather.on "/foo", 'enter', spy
-      Pather.on "/foo", 'leave', spy
-      Pather.on "/foo", 'enter', spy
-      Pather.removeAllListeners()
+      pather.on "/foo", 'enter', spy
+      pather.on "/foo", 'leave', spy
+      pather.on "/foo", 'enter', spy
+      pather.removeAllListeners()
       window.history.replaceState {}, null, "/foo"
       spy.callCount.should.equal 0
 
   describe "matching route", ->
     it "can check if there is a registered listener for a given route", ->
-      Pather.on "/foo/bar", ->
-      Pather.has("/foo").should.not.be.ok
+      pather.on "/foo/bar", ->
+      pather.has("/foo").should.not.be.ok
 
-      Pather.on "/foo/:bar", ->
-      Pather.has("/foo/baz").should.be.ok
+      pather.on "/foo/:bar", ->
+      pather.has("/foo/baz").should.be.ok
 
-      Pather.has("/fOo/Bar").should.not.be.ok
-      Pather.on /foo\/bar/i, ->
-      Pather.has("/fOo/Bar").should.be.ok
+      pather.has("/fOo/Bar").should.not.be.ok
+      pather.on /foo\/bar/i, ->
+      pather.has("/fOo/Bar").should.be.ok
 
     it "can check whether the current location matches a regex", ->
       window.history.replaceState {}, null, "/foo"
-      Pather.match(/foo.*/).should.be.ok
+      pather.match(/foo.*/).should.be.ok
 
     it "extracts the parameters from a regex", ->
       window.history.replaceState {}, null, "/foo/bar/baz"
-      Pather.match(/foo\/(.*)\/.*/).should.eql ['bar']
+      pather.match(/foo\/(.*)\/.*/).should.eql ['bar']
 
     it "can check whether the current location matches a route string", ->
       window.history.replaceState {}, null, "/foo/bar/baz"
-      Pather.match("/foo/:qux/*").should.be.ok
+      pather.match("/foo/:qux/*").should.be.ok
 
     it "extracts the parameters from a route string", ->
       window.history.replaceState {}, null, "/foo/bar/baz"
-      Pather.match("/foo/:qux/*subpath").should.eql ['bar', 'baz']
+      pather.match("/foo/:qux/*subpath").should.eql ['bar', 'baz']
 
