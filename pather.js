@@ -155,7 +155,6 @@
 
     Pather.prototype.checkAll = function () {
       listeners.forEach(function (listener) {
-        console.log(normalizePathname())
         check(listener, normalizePathname());
       });
     };
