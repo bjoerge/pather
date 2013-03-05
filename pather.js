@@ -9,9 +9,26 @@
 
     // Convert a route string to a regular expression
     routeToRegExp = function (route) {
-      route = route.replace(escapeRegExp, "\\$&").replace(namedParam, "([^/]+)").replace(splatParam, "(.*)?").replace(subPath, ".*?");
-      var lastChar = route.charAt(route.length-1);
-      route += lastChar == "/" ? "?" : "/?";
+      var parts = route.split("?"),
+          path = parts[0], 
+          search = parts[1];
+      
+      route = path
+              .replace(escapeRegExp, "\\$&")
+              .replace(namedParam, "([^/]+)")
+              .replace(splatParam, "(.*)?")
+              .replace(subPath, ".*?")
+              .replace(/\/?$/, "/?");
+
+      if (search) {
+        search = search
+          .replace(escapeRegExp, "\\$&")
+          .replace(namedParam, "([^/]+)")
+          .replace(splatParam, "(.*)?")
+          .replace(subPath, ".*?");
+                route = route+"\\?"+search;
+      }
+      
       return new RegExp("^" + route + "$");
     },
 
@@ -190,7 +207,8 @@
   // It returns a combination of document.location.pathname and document.location.search adjusted for root path
   Pather.prototype._getPath = function() {
     var loc = window.location;
-    var pathname = loc.pathname + loc.hash;
+    var pathname = loc.pathname + loc.hash + loc.search;
+    console.log(pathname)
     return pathname || "/";
   };
 

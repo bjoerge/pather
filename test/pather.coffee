@@ -106,12 +106,12 @@ describe "Pather", ->
       window.location.hash = "history"
       spy.callCount.should.equal 2
 
-    xit "will also map the keyword parameters to the callback function (todo)", ->
+    it "will also map the keyword parameters to the callback function", ->
       spy = sinon.spy()
       pather.on "/foo/:a/:b?keyword=:c", spy
       window.history.replaceState {}, null, "/foo/bar/baz?keyword=qux"
       spy.callCount.should.equal 1
-      spy.calledWith('bar', 'baz', {keyword: 'qux'}).should.be.ok
+      spy.calledWith('bar', 'baz', 'qux').should.be.ok
 
   describe "removing listeners", ->
     pather = null

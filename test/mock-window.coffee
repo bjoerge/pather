@@ -2,6 +2,7 @@ jsdom = require("jsdom").jsdom;
 doc = jsdom();
 
 window = doc.createWindow();
+uparse = require("url").parse
 
 oldSetter = Object.getOwnPropertyDescriptor(window.location, 'hash').set
 # A workaround to properly trigger hashchange events when setting window.location.hash
@@ -14,8 +15,11 @@ window.location.__defineSetter__ "hash", (val)->
   window.dispatchEvent(ev)
 
 window.history =
-  replaceState: (state, title, pathname)->
-    window.location.pathname = pathname
+  replaceState: (state, title, url)->
+    parsed = uparse(url)
+    window.location.pathname = parsed.pathname
+    window.location.search = parsed.search
+    window.location.hash = parsed.hash
     ev = doc.createEvent("PopStateEvent")
     ev.initEvent('popstate', false, false)
     window.dispatchEvent(ev)
