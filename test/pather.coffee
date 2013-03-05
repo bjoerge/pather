@@ -2,14 +2,15 @@ require("./mock-window")
 Pather = require("../pather")
 sinon = require("sinon")
 
-describe "Path listener", ->
+describe "Pather", ->
+  beforeEach ->
+    window.location.hash = ''
+    window.history.replaceState {}, null, "/"
 
   describe "Path matching", ->
     pather = null
     beforeEach ->
       pather = new Pather()
-      window.location.hash = ''
-      window.history.replaceState {}, null, "/"
     afterEach ->
       pather.removeAllListeners()
 
@@ -104,8 +105,6 @@ describe "Path listener", ->
     pather = null
     beforeEach ->
       pather = new Pather()
-      window.location.hash = ''
-      window.history.replaceState {}, null, "/"
     afterEach ->
       pather.removeAllListeners()
 
@@ -129,8 +128,6 @@ describe "Path listener", ->
     pather = null
     beforeEach ->
       pather = new Pather()
-      window.location.hash = ''
-      window.history.replaceState {}, null, "/"
     afterEach ->
       pather.removeAllListeners()
 
@@ -160,41 +157,3 @@ describe "Path listener", ->
     it "extracts the parameters from a route string", ->
       window.history.replaceState {}, null, "/foo/bar/baz"
       pather.match("/foo/:qux/*subpath").should.eql ['bar', 'baz']
-
-
-  describe "configuration", ->
-    pather = null
-    beforeEach ->
-      pather = new Pather()
-      window.location.hash = ''
-      window.history.replaceState {}, null, "/"
-    afterEach ->
-      pather.removeAllListeners()
-  
-    it "can check if there is a registered listener for a given route", ->
-      pather.on "/foo/bar", ->
-      pather.has("/foo").should.not.be.ok
-
-      pather.on "/foo/:bar", ->
-      pather.has("/foo/baz").should.be.ok
-
-      pather.has("/fOo/Bar").should.not.be.ok
-      pather.on /foo\/bar/i, ->
-      pather.has("/fOo/Bar").should.be.ok
-
-    it "can check whether the current location matches a regex", ->
-      window.history.replaceState {}, null, "/foo"
-      pather.match(/foo.*/).should.be.ok
-
-    it "extracts the parameters from a regex", ->
-      window.history.replaceState {}, null, "/foo/bar/baz"
-      pather.match(/foo\/(.*)\/.*/).should.eql ['bar']
-
-    it "can check whether the current location matches a route string", ->
-      window.history.replaceState {}, null, "/foo/bar/baz"
-      pather.match("/foo/:qux/*").should.be.ok
-
-    it "extracts the parameters from a route string", ->
-      window.history.replaceState {}, null, "/foo/bar/baz"
-      pather.match("/foo/:qux/*subpath").should.eql ['bar', 'baz']
-
