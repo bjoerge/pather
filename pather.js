@@ -124,6 +124,7 @@
     }
   }
 
+  // `_normalizeRoute` normalizes a route according to configured root path
   Pather.prototype._normalizeRoute = function(route) {
     var root = (this.options.root||'').replace(/\/?$/, "/?");
     return route.replace(new RegExp("^"+root), "/");
