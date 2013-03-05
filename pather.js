@@ -117,10 +117,10 @@
     this.listeners = [];
 
     if (!(options.hasOwnProperty('pushState') || options.pushState === false)) {
-      addDOMListener('popstate', this._checkAll.bind(this));
+      addDOMListener('popstate', this.checkAll.bind(this));
     }
     if (!(options.hasOwnProperty('hash') || options.hash === false)) {
-      addDOMListener('hashchange', this._checkAll.bind(this));
+      addDOMListener('hashchange', this.checkAll.bind(this));
     }
   }
 
@@ -216,7 +216,8 @@
   // It returns a combination of document.location.pathname and document.location.search adjusted for root path
   Pather.prototype._getPath = function() {
     var loc = window.location;
-    var pathname = loc.pathname + loc.hash + loc.search;
+    // Soooo, if the location hash starts with #/ give it precedence over the location.pathname :s
+    var pathname = (loc.hash.charAt(1) == "/") ? loc.hash.substring(1) + loc.search : loc.pathname + loc.hash + loc.search;
     return this._normalizeRoute(pathname || "/");
   };
 
@@ -257,7 +258,7 @@
     }
   };
 
-  Pather.prototype._checkAll = function () {
+  Pather.prototype.checkAll = function () {
     for (var i = this.listeners.length; i--;) {
       this._check(this.listeners[i]);
     }
