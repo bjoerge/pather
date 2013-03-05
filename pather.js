@@ -238,8 +238,9 @@
   Pather.prototype._check = function (listener) {
     var path = this._getPath();
     if (listener.regexp.test(path)) {
-      // Todo: also capture search params
-      var params = listener.regexp.exec(path).slice(1);
+      var params = listener.regexp.exec(path).slice(1).map(function(param) {
+        return decodeURIComponent(param);
+      });
       if (listener.event === 'enter' && !(listener.active && deepEqual(listener.previousParams, params))) {
         // This listener wasn't active on last enter, so go ahead and notify its eventHandler
         this._call(listener, params);
