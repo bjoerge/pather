@@ -20,6 +20,18 @@ describe "Pather", ->
       window.history.replaceState {}, null, "/foo"
       spy.callCount.should.equal 1
 
+    it "ignores any trailing slash from the location path", ->
+      spy = sinon.spy()
+      pather.on "/foo", spy
+      window.history.replaceState {}, null, "/foo/"
+      spy.callCount.should.equal 1
+
+    it "ignores any trailing slash from the route string too", ->
+      spy = sinon.spy()
+      pather.on "/foo/", spy
+      window.history.replaceState {}, null, "/foo"
+      spy.callCount.should.equal 1
+
     it "can register a listener function for whenever a path is left", ->
       spy = sinon.spy()
       pather.on "/foo", 'leave', spy

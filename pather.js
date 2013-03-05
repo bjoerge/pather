@@ -10,7 +10,9 @@
     // Convert a route string to a regular expression
     routeToRegExp = function (route) {
       route = route.replace(escapeRegExp, "\\$&").replace(namedParam, "([^/]+)").replace(splatParam, "(.*)?").replace(subPath, ".*?");
-      return new RegExp("^" + route + "/?$");
+      var lastChar = route.charAt(route.length-1);
+      route += lastChar == "/" ? "?" : "/?";
+      return new RegExp("^" + route + "$");
     },
 
     // Cross browser addEventListener
