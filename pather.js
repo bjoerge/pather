@@ -106,7 +106,7 @@
     this.active = false;
 
     // Store the extracted parameters from the current pathname
-    this.currentParams = null;
+    this.previousParams = null;
   }
 
   function Pather(options) {
@@ -124,8 +124,16 @@
     }
   }
 
+  Pather.prototype._normalizeRoute = function(route) {
+    var root = (this.options.root||'').replace(/\/?$/, "/?");
+    return route.replace(new RegExp("^"+root), "/");
+  };
+  
   // `addListener` creates and adds a new listener for a given route, on a given event
   Pather.prototype.addListener = function addListener(route, event, eventHandler) {
+    if (!(route instanceof RegExp)) {
+      route = this._normalizeRoute(route);
+    }
     this._add(new PatherEventListener(route, event, eventHandler));
   };
 
@@ -208,8 +216,7 @@
   Pather.prototype._getPath = function() {
     var loc = window.location;
     var pathname = loc.pathname + loc.hash + loc.search;
-    console.log(pathname)
-    return pathname || "/";
+    return this._normalizeRoute(pathname || "/");
   };
 
   // Used internally for calling a listener whenever a match has occurred

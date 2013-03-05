@@ -169,3 +169,22 @@ describe "Pather", ->
     it "extracts the parameters from a route string", ->
       window.history.replaceState {}, null, "/foo/bar/baz"
       pather.match("/foo/:qux/*subpath").should.eql ['bar', 'baz']
+
+  describe "configuration", ->
+    pather = null
+    afterEach ->
+      pather.removeAllListeners()
+    describe "Root path", ->
+      it "Can be configured with a root path", ->
+        spy = sinon.spy()
+        pather = new Pather(root:"/foo/bar")
+        pather.on "/baz", spy
+        window.history.replaceState {}, null, "/foo/bar/baz"
+        spy.callCount.should.equal 1
+
+      it "Can be configured with a root path with a trailing slash", ->
+        spy = sinon.spy()
+        pather = new Pather(root:"/foo/bar/")
+        pather.on "/baz", spy
+        window.history.replaceState {}, null, "/foo/bar/baz"
+        spy.callCount.should.equal 1
