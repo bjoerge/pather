@@ -1,47 +1,16 @@
 (function (root, win) {
   "use strict";
-  var
-    // A few patterns recklessly stolen from Backbone.js and modified a little
-    namedParam = /:\w+/g,
-    splatParam = /\*\w+/g,
-    subPath = /\*/g,
-    escapeRegExp = /[-[\]{}()+?.,\\^$|#\s]/g,
 
-    // Convert a route string to a regular expression
-    routeToRegExp = function (route) {
-      var parts = route.split("?"),
-          path = parts[0], 
-          search = parts[1];
-      
-      route = path
-              .replace(escapeRegExp, "\\$&")
-              .replace(namedParam, "([^/]+)")
-              .replace(splatParam, "(.*)?")
-              .replace(subPath, ".*?")
-              .replace(/\/?$/, "/?");
-
-      if (search) {
-        search = search
-          .replace(escapeRegExp, "\\$&")
-          .replace(namedParam, "([^/]+)")
-          .replace(splatParam, "(.*)?")
-          .replace(subPath, ".*?");
-                route = route+"\\?"+search;
-      }
-      
-      return new RegExp("^" + route + "$");
-    },
-
-    // Cross browser addEventListener
-    addDOMListener = function (type, listener, useCapture) {
+  // Cross browser addEventListener
+  var addDOMListener = function (type, listener, useCapture) {
       addDOMListener = window[window.addEventListener ? 'addEventListener' : 'attachEvent'].bind(window);
       return addDOMListener(type, listener, useCapture);
     },
 
-    // Compare two objects recursively for equality
-    // Note that this a rather naive deepEqual implementation.
-    // It should, however be sufficient as only strings are extracted as parameters from the pathname
-    // This is derived from github.com/substack/node-deep-equal, which again is derived from the Node.js source code
+  // Compare two objects recursively for equality
+  // Note that this a rather naïve deepEqual implementation.
+  // It should, however be sufficient as only strings are extracted as parameters from the pathname
+  // This is derived from github.com/substack/node-deep-equal, which again is derived from the Node.js source code
     deepEqual = function (object, other) {
       if (object === other) {
         return true;
@@ -72,6 +41,8 @@
       }
     };
 
+  var RoutePattern = require("route-pattern");
+
   // PatherEventListener constructor
   // Takes three parameters:
   // 
@@ -96,7 +67,7 @@
     }
 
     // The route string are compiled to a regexp (if it isn't already)
-    this.regexp = (route instanceof RegExp) ? route : routeToRegExp(route);
+    this.routePattern = new RoutePattern.fromString(route);
 
     // This indicates whether the listener should be removed after firing the first time or keep on firing
     // whenever it becomes active
@@ -106,7 +77,7 @@
     this.active = false;
 
     // Store the extracted parameters from the current pathname
-    this.previousParams = null;
+    this.previousMatch = null;
   }
 
   function Pather(options) {
@@ -125,11 +96,11 @@
   }
 
   // `_normalizeRoute` normalizes a route according to configured root path
-  Pather.prototype._normalizeRoute = function(route) {
-    var root = (this.options.root||'').replace(/\/?$/, "/?");
-    return route.replace(new RegExp("^"+root), "/");
+  Pather.prototype._normalizeRoute = function (route) {
+    var root = (this.options.root || '').replace(/\/?$/, "/?");
+    return route.replace(new RegExp("^" + root), "/");
   };
-  
+
   // `addListener` creates and adds a new listener for a given route, on a given event
   Pather.prototype.addListener = function addListener(route, event, eventHandler) {
     if (!(route instanceof RegExp)) {
@@ -175,15 +146,19 @@
   // `match` matches the given regex or route string against the current document.location.pathname and return an array with the
   // values for each capturing parenthesis (if any). Returns null if there is no match.
   Pather.prototype.match = function (/* String|RegExp */ route) {
-    var regexp = (route instanceof RegExp) ? route : routeToRegExp(route);
-    var matches = regexp.exec(this._getPath());
-    return matches && matches.slice(1);
+    var path = this._getPath();
+    if (route instanceof RegExp) {
+      var match = route.exec(path);
+      if (!match) return null;
+      return match.slice(1);
+    }
+    return RoutePattern.fromString(route).match(this._getPath());
   };
 
   // `has` checks whether any of the registered listeners matches the given path
   Pather.prototype.has = function (pathname) {
     return this.listeners.some(function (listener) {
-      return listener.regexp.test(pathname);
+      return listener.routePattern.matches(pathname);
     }, this);
   };
 
@@ -214,16 +189,21 @@
 
   // Used internally for getting the current path
   // It returns a combination of document.location.pathname and document.location.search adjusted for root path
-  Pather.prototype._getPath = function() {
-    var loc = window.location;
-    // Soooo, if the location hash starts with #/ give it precedence over the location.pathname :s
-    var pathname = (loc.hash.charAt(1) == "/") ? loc.hash.substring(1) + loc.search : loc.pathname + loc.hash + loc.search;
-    return this._normalizeRoute(pathname || "/");
+  Pather.prototype._getPath = function () {
+    var loc = window.location, relativeLocation;
+    if (window.history["emulate"] && loc.hash && loc.hash.charAt(1) == "/") {
+      relativeLocation = loc.hash.substring(1);
+    }
+    else {
+      relativeLocation = loc.pathname + loc.search + loc.hash;
+    }
+    return this._normalizeRoute(relativeLocation || "/");
   };
 
   // Used internally for calling a listener whenever a match has occurred
-  Pather.prototype._call = function (listener, params) {
-    listener.eventHandler.apply(listener, params);
+  Pather.prototype._emit = function (listener, params) {
+    var event = params;
+    listener.eventHandler.apply(listener, [params].concat(params.params));
     if (listener.once) {
       this._remove(listener);
     }
@@ -237,23 +217,21 @@
   // - It's captured parameters has changes from last time it was active (todo: maybe make an option?)
   Pather.prototype._check = function (listener) {
     var path = this._getPath();
-    if (listener.regexp.test(path)) {
-      var params = listener.regexp.exec(path).slice(1).map(function(param) {
-        return decodeURIComponent(param);
-      });
-      if (listener.event === 'enter' && !(listener.active && deepEqual(listener.previousParams, params))) {
+    if (listener.routePattern.matches(path)) {
+      var match = listener.routePattern.match(path);
+      if (listener.event === 'enter' && !(listener.active && deepEqual(listener.previousMatch, match))) {
         // This listener wasn't active on last enter, so go ahead and notify its eventHandler
-        this._call(listener, params);
+        this._emit(listener, match);
       }
       // Store the result of this check until next check
       listener.active = true;
-      listener.previousParams = params;
+      listener.previousMatch = match;
     }
     else {
       if (listener.active && listener.event === 'leave') {
         // Its a listener for 'leave' and the regexp matched on last check
-        this._call(listener, listener.previousParams);
-        listener.previousParams = null;
+        this._emit(listener, listener.previousMatch);
+        listener.previousMatch = null;
       }
       listener.active = false;
     }
@@ -265,11 +243,12 @@
     }
   };
 
-  if (typeof exports !== 'undefined') {
-    if (typeof module !== 'undefined' && module.exports) {
-      module.exports = Pather;
-    }
-  } else {
-    win.Pather = Pather;
-  }
+  Pather.prototype.navigate = function(path, replace) {
+    window.history[replace ? 'replaceState' : 'pushState']({}, null, path);
+    this.checkAll();
+    return true    
+  };
+
+
+  module.exports = Pather;
 })(this, window);

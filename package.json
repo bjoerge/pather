@@ -1,19 +1,22 @@
 {
   "name": "pather",
-  "version": "0.1.0-alpha-3",
+  "version": "0.1.0-beta-1",
   "description": "A window.location listener with added relish",
   "main": "pather.js",
-  "dependencies": {},
+  "dependencies": {
+    "route-pattern": "~0.0.1"
+  },
   "devDependencies": {
-    "jquery": "git://github.com/bjoerge/jquery-node.git",
     "jsdom": "latest",
-    "mocha": "latest",
-    "coffee-script": "latest",
-    "should": "latest",
-    "sinon": "latest"
+    "mocha": "~1.8.2",
+    "sinon": "latest",
+    "jquery": "git://github.com/bjoerge/jquery-node.git",
+    "es5-shim": "~2.0.8"
   },
   "scripts": {
-    "test": "node_modules/.bin/mocha -r should"
+    "test": "node_modules/.bin/mocha -r ./test/emulate-window",
+    "test-browser": "node_modules/.bin/browserify -r ./test/pather.js > test-browser/build/tests.js",
+    "build": "node_modules/.bin/browserify -r ./test/pather.js > test-browser/build/tests.js"
   },
   "repository": {
     "type": "git",
