@@ -39,7 +39,7 @@
     }
 
     // The route string are compiled to a regexp (if it isn't already)
-    this.routePattern = new RoutePattern.fromString(route);
+    this.routePattern = (route instanceof RegExp) ? new RoutePattern.RegExpPattern(route) : new RoutePattern.fromString(route);
 
     // This indicates whether the listener should be removed after firing the first time or keep on firing
     // whenever it becomes active
