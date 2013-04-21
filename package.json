@@ -12,12 +12,15 @@
     "mocha": "~1.8.2",
     "sinon": "latest",
     "jquery": "git://github.com/bjoerge/jquery-node.git",
-    "es5-shim": "~2.0.8"
+    "es5-shim": "~2.0.8",
+    "semver": "~1.1.4",
+    "uglify-js": "~2.2.5",
+    "browserify": "~2.13.2"
   },
   "scripts": {
     "test": "node_modules/.bin/mocha -r ./test/emulate-window",
     "test-browser": "node_modules/.bin/browserify -r ./test/pather.js > test-browser/build/tests.js",
-    "build": "node_modules/.bin/browserify -r ./test/pather.js > test-browser/build/tests.js"
+    "build": "_build.js"
   },
   "repository": {
     "type": "git",
