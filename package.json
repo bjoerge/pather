@@ -1,6 +1,6 @@
 {
   "name": "pather",
-  "version": "0.1.0-beta-1",
+  "version": "0.1.0-beta-2",
   "description": "A window.location listener with added relish",
   "main": "pather.js",
   "dependencies": {
