@@ -41,15 +41,24 @@ describe("Pather", function () {
       });
       it("can register a listener function for whenever a path is left", function () {
         pather.on("/foo", 'leave', spy);
-        pather.navigate("/foo")
-        pather.navigate("/bar")
+        pather.navigate("/foo");
+        pather.navigate("/bar");
         assert(spy.calledOnce);
       });
       it("can register a listener to be called when entering a parameterized route", function () {
         pather.on("/foo/:a/:b", spy);
-        pather.navigate("/foo/bar/baz")
+        pather.navigate("/foo/bar/baz");
         assert(spy.calledOnce);
         assert.deepEqual(spy.firstCall.args.splice(1), ['bar', 'baz'])
+      });
+      it("should trigger on leave before enter", function () {
+        var enterSpy = sinon.spy();
+        var leaveSpy = sinon.spy();
+        pather.navigate("/foo");
+        pather.on("/*any", 'enter', enterSpy);
+        pather.on("/*any", 'leave', leaveSpy);
+        pather.navigate("/foo/bar");
+        assert(leaveSpy.calledBefore(enterSpy));
       });
       it("should trigger on re-enter", function () {
         pather.on("/foo", spy);
@@ -93,13 +102,13 @@ describe("Pather", function () {
         pather.on("/fruits/:fruit/#:bookmark", spy);
         pather.navigate("/fruits/banana/");
         assert(spy.notCalled);
-        pather.navigate("#nutrition_facts");
-        pather.navigate("#history");
+        pather.navigate("/fruits/apple/#nutrition_facts");
+        pather.navigate("/fruits/pear/#history");
         assert(spy.calledTwice);
       });
       it("should map the keyword parameters to the callback function", function () {
         pather.on("/foo/:a/:b?keyword=:c", spy);
-        pather.navigate("/foo/bar/baz?keyword=qux")
+        pather.navigate("/foo/bar/baz?keyword=qux");
         assert(spy.calledOnce);
         assert(spy.calledWith(sinon.match.object, 'bar', 'baz', 'qux'));
       });
@@ -127,7 +136,7 @@ describe("Pather", function () {
     it("should remove the listener", function () {
       pather.on("/foo", spy);
       pather.removeListener('/foo', spy);
-      pather.navigate("/foo")
+      pather.navigate("/foo");
       assert(spy.notCalled);
     });
     it("should remove all listeners", function () {
