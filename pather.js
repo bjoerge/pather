@@ -174,7 +174,6 @@
 
   // Used internally for calling a listener whenever a match has occurred
   Pather.prototype._emit = function (listener, params) {
-    var event = params;
     listener.eventHandler.apply(listener, [params].concat(params.params));
     if (listener.once) {
       this._remove(listener);
