@@ -189,24 +189,16 @@
   // - It's captured parameters has changes from last time it was active (todo: maybe make an option?)
   Pather.prototype._check = function (listener) {
     var path = this._getPath();
-    if (listener.routePattern.matches(path)) {
-      var match = listener.routePattern.match(path);
-      if (listener.event === 'enter' && !(listener.active && deepEqual(listener.previousMatch, match))) {
-        // This listener wasn't active on last enter, so go ahead and notify its eventHandler
-        this._emit(listener, match);
-      }
-      // Store the result of this check until next check
-      listener.active = true;
-      listener.previousMatch = match;
+    var match = listener.routePattern.match(path);
+    if (listener.event === 'leave' && listener.active && !deepEqual(listener.previousMatch, match)) {
+      // Its a listener for 'leave' and the pattern matched on last check
+      this._emit(listener, listener.previousMatch);
     }
-    else {
-      if (listener.active && listener.event === 'leave') {
-        // Its a listener for 'leave' and the regexp matched on last check
-        this._emit(listener, listener.previousMatch);
-        listener.previousMatch = null;
-      }
-      listener.active = false;
+    if (match && listener.event == 'enter' && (!listener.active || !deepEqual(listener.previousMatch, match))) {
+      this._emit(listener, match);
     }
+    listener.previousMatch = match;
+    listener.active = !!match;
   };
 
   Pather.prototype.checkAll = function () {
