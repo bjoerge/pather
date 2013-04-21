@@ -7,38 +7,10 @@
       return addDOMListener(type, listener, useCapture);
     },
 
-  // Compare two objects recursively for equality
-  // Note that this a rather naïve deepEqual implementation.
-  // It should, however be sufficient as only strings are extracted as parameters from the pathname
-  // This is derived from github.com/substack/node-deep-equal, which again is derived from the Node.js source code
-    deepEqual = function (object, other) {
-      if (object === other) {
-        return true;
-      } else if (typeof object !== 'object' && typeof other !== 'object') {
-        // We are dealing with two primitives
-        return object == other;
-      } else {
-        var keysActual = Object.getOwnPropertyNames(object),
-          keysExpected = Object.getOwnPropertyNames(other),
-          i;
-
-        if (keysActual.length != keysExpected.length) return false;
-
-        // Make sure we compare the set of keys in the same order
-        keysActual.sort();
-        keysExpected.sort();
-
-        // Quickly compare keys
-        for (i = keysActual.length; i--;) {
-          if (keysActual[i] != keysExpected[i])
-            return false;
-        }
-        for (i = keysActual.length; i--;) {
-          var key = keysActual[i];
-          if (!deepEqual(object[key], other[key])) return false;
-        }
-        return true;
-      }
+    // Compare two objects recursively for equality
+    sig = require("sigmund"),
+    deepEqual = function(o1, o2) {
+      return sig(o1) == sig(o2);
     };
 
   var RoutePattern = require("route-pattern");

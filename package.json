@@ -4,7 +4,8 @@
   "description": "A window.location listener with added relish",
   "main": "pather.js",
   "dependencies": {
-    "route-pattern": "~0.0.3"
+    "route-pattern": "~0.0.3",
+    "sigmund": "~1.0.0"
   },
   "devDependencies": {
     "jsdom": "latest",
