@@ -195,6 +195,14 @@ describe("Pather", function () {
         qux: 'qux'
       });
     });
+
+    it("extracts the query parameters from a route string", function () {
+      pather.navigate("/foo/bar/baz?whatever=foobar");
+      assert.deepEqual(pather.match("/foo/:qux/*subpath").queryParams, {
+        whatever: "foobar"
+      });
+    });
+
   });
 
   describe("configuration", function () {
