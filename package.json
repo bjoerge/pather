@@ -3,17 +3,16 @@
   "version": "0.0.12",
   "description": "A window.location listener with added relish",
   "main": "pather.js",
-  "dependencies": {},
   "devDependencies": {
+    "coffee-script": "^1.8.0",
     "jquery": "git://github.com/bjoerge/jquery-node.git",
-    "jsdom": "latest",
-    "mocha": "latest",
-    "coffee-script": "latest",
-    "should": "latest",
-    "sinon": "latest"
+    "jsdom": "^0.6.5",
+    "mocha": "^2.1.0",
+    "should": "^4.4.4",
+    "sinon": "^1.12.2"
   },
   "scripts": {
-    "test": "node_modules/.bin/mocha -r should"
+    "test": "node_modules/.bin/mocha -r coffee-script/register -r should"
   },
   "repository": {
     "type": "git",
